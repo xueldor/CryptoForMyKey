@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<script src="crypto-js.min.js"></script>
+<script>
+	function loadFile(filePath) {
+	  var result = null;
+	  var xmlhttp = new XMLHttpRequest();
+	  xmlhttp.open("GET", filePath, false);
+	  xmlhttp.send();
+	  if (xmlhttp.status==200) {
+		result = xmlhttp.responseText;
+	  }
+	  return result;
+	}
+</script>
+
+<body>
+<form>
+Input password: 
+<input type="password" id="psw">
+</form> 
+<button onclick="decryptText()">OK</button>
+<div><B>Here is the text:</B></div></br>
+<div id="decrypted_text_id"></div>
+</body>
+<script>
+    var fileName = "MyCoreKeys.txt"
+    var iv = CryptoJS.enc.Utf8.parse("1234567890123456")
+    function decryptText(){
+		document.getElementById("decrypted_text_id").innerHTML = ""
+		var secret = document.getElementById("psw").value
+		var content = loadFile(fileName).trim();
+		var decryptedValue = CryptoJS.AES.decrypt(content, secret, {
+			iv,
+			mode: CryptoJS.mode.CBC,
+			padding: CryptoJS.pad.Pkcs7
+		}).toString(CryptoJS.enc.Utf8)
+		
+		
+		decryptedValue = decryptedValue.replaceAll('\r\n',"</br>")
+		decryptedValue = decryptedValue.replaceAll('\n',"</br>")
+		decryptedValue = decryptedValue.replaceAll('\r',"</br>")
+		document.getElementById("decrypted_text_id").innerHTML = decryptedValue;
+		
+		//encryptText(content, secret)
+	};
+	function encryptText(content, secret){
+		var encryptedValue = CryptoJS.AES.encrypt(content, secret,{
+			iv:iv,
+			mode: CryptoJS.mode.CBC,
+			padding: CryptoJS.pad.Pkcs7
+		}).toString()
+	
+		alert(encryptedValue.toString(CryptoJS.enc.Base64));
+
+	};
+	
+</script>
+</html>
